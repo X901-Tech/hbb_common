@@ -33,6 +33,11 @@ fn new_socket(addr: SocketAddr, reuse: bool, buf_size: usize) -> Result<Socket, 
     if buf_size > 0 {
         socket.set_recv_buffer_size(buf_size).ok();
     }
+    // RustDesk-RED v2: increase send buffer for burst tolerance (video keyframes)
+    socket.set_send_buffer_size(1024 * 1024).ok(); // 1MB send buffer
+    if buf_size == 0 {
+        socket.set_recv_buffer_size(1024 * 1024).ok(); // 1MB recv buffer
+    }
     log::debug!(
         "Receive buf size of udp {}: {:?}",
         addr,
