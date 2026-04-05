@@ -76,6 +76,9 @@ pub(crate) fn new_socket(addr: std::net::SocketAddr, reuse: bool) -> Result<TcpS
         socket.set_reuseport(true).ok();
         socket.set_reuseaddr(true).ok();
     }
+    // RustDesk-RED: larger TCP buffers reduce stalls under burst load
+    socket.set_send_buffer_size(512 * 1024).ok(); // 512KB
+    socket.set_recv_buffer_size(512 * 1024).ok(); // 512KB
     socket.bind(addr)?;
     Ok(socket)
 }
